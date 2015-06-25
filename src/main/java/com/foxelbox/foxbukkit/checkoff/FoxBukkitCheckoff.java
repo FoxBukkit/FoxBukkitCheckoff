@@ -27,6 +27,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -226,7 +227,6 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
     }
 
     private void plyRankSetting(UUID ply, String rank) {
-        refreshCOPlayerOnlineState(ply);
         if(permissionHandler.getImmunityLevel(rank) <= 0) {
             addCOPlayer(ply);
         } else {
@@ -267,5 +267,12 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         plyRankSetting(event.getPlayer().getUniqueId(), permissionHandler.getGroup(event.getPlayer()));
+        setCOPlayerOnlineState(event.getPlayer().getUniqueId(), true);
+
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        setCOPlayerOnlineState(event.getPlayer().getUniqueId(), false);
     }
 }
