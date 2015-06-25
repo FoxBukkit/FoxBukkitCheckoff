@@ -56,7 +56,7 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
     Set<UUID> checkOffPlayers = new LinkedHashSet<>();
 
     StringBuilder makeMessageBuilder() {
-        return new StringBuilder("\u00a75[FBP] \u00a7f");
+        return new StringBuilder("\u00a75[FBCO] \u00a7f");
     }
 
     /**
