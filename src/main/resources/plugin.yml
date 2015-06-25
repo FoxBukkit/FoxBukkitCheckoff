@@ -2,3 +2,8 @@ name: FoxBukkitCheckoff
 main: com.foxelbox.foxbukkit.checkoff.FoxBukkitCheckoff
 version: 1.0.0
 depend: [FoxBukkitScoreboard, FoxBukkitPermissions]
+commands:
+  co:
+    description: Uses Checkoff system
+    permission: foxbukkit.checkoff.co
+    usage: /<command>
