@@ -1,0 +1,4 @@
+name: FoxBukkitCheckoff
+main: com.foxelbox.foxbukkit.checkoff.FoxBukkitCheckoff
+version: 1.0.0
+depend: [FoxBukkitScoreboard, FoxBukkitPermissions]
