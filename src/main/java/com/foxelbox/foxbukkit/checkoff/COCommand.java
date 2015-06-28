@@ -16,23 +16,48 @@
  */
 package com.foxelbox.foxbukkit.checkoff;
 
+import de.diddiz.LogBlock.QueryParams;
+import de.diddiz.LogBlock.html.MessageHelper;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.UUID;
 
 public class COCommand implements CommandExecutor {
     private final FoxBukkitCheckoff checkoff;
+
+    private boolean isChangesListEmptyFor(CommandSender commandSender, String... args) {
+        try {
+            return checkoff.logBlock.getBlockChanges(new QueryParams(checkoff.logBlock, commandSender, Arrays.asList(args))).isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String getButtonsForPlayer(UUID uuid, String playerName) {
+        String buttons = MessageHelper.button("/lb player " + playerName + " sum blocks", "lb", "blue", true) + " "
+                + MessageHelper.button("/lb player " + playerName + " chestaccess", "chest", "blue", true);
+        if (checkoff.isPlayerOnline(uuid)) {
+            buttons = MessageHelper.button("/at 0 vanish on; tp -sn \"" + playerName + '"', "tp", "blue", true) + " " + buttons;
+        } else {
+            buttons = MessageHelper.button("/co " + playerName, "x", "red", true) + " " + buttons;
+        }
+        return buttons;
+    }
 
     public COCommand(FoxBukkitCheckoff checkoff) {
         this.checkoff = checkoff;
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String cmdStr, String[] args) {
-        Player ply = (Player)commandSender;
+    public boolean onCommand(final CommandSender commandSender, Command command, String cmdStr, String[] args) {
+        final Player ply = (Player)commandSender;
 
         String primaryArg;
         if(args.length < 1) {
@@ -43,12 +68,57 @@ public class COCommand implements CommandExecutor {
 
         switch (primaryArg) {
             case "on":
-                if(!checkoff.isDisplayingCO(ply))
+                if (!checkoff.isDisplayingCO(ply))
                     checkoff.toggleDisplayCO(ply);
                 break;
             case "off":
-                if(checkoff.isDisplayingCO(ply))
+                if (checkoff.isDisplayingCO(ply))
                     checkoff.toggleDisplayCO(ply);
+                break;
+            case "list":
+                for (UUID uuid : checkoff.checkOffPlayers) {
+                    final String playerName = checkoff.playerUUIDToName.get(uuid.toString());
+                    checkoff.sendXML(ply, checkoff.makeMessageBuilder()
+                            .append(checkoff.isPlayerOnline(uuid) ? "\u00a72" : "\u00a74")
+                            .append(playerName)
+                            .append(' ')
+                            .append(getButtonsForPlayer(uuid, playerName))
+                            .toString()
+                    );
+                }
+                break;
+            case "empty":
+                final HashSet<UUID> offlinePlayerUUIDs = new HashSet<>();
+                for (UUID playerName : checkoff.checkOffPlayers) {
+                    if (!checkoff.isPlayerOnline(playerName)) {
+                        offlinePlayerUUIDs.add(playerName);
+                    }
+                }
+                new Thread() {
+                    public void run() {
+                        final Iterator<UUID> it = offlinePlayerUUIDs.iterator();
+                        while (it.hasNext()) {
+                            final UUID uuid = it.next();
+                            final String name = checkoff.playerUUIDToName.get(uuid.toString());
+                            if (!isChangesListEmptyFor(ply, "player", name) || !isChangesListEmptyFor(ply, "player", name, "chestaccess")) {
+                                it.remove();
+                            }
+                        }
+                        if(!offlinePlayerUUIDs.isEmpty()) {
+                            checkoff.getServer().getScheduler().scheduleSyncDelayedTask(checkoff, new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (final UUID uuid : offlinePlayerUUIDs) {
+                                        checkoff.removeCOPlayer(uuid);
+                                    }
+                                    checkoff.sendXML(ply, checkoff.makeMessageBuilder().append("Removed empty changelists").toString());
+                                }
+                            });
+                        } else {
+                            checkoff.sendXML(ply, checkoff.makeMessageBuilder().append("No empty changelists").toString());
+                        }
+                    }
+                }.start();
                 break;
             case "toggle":
                 checkoff.toggleDisplayCO(ply);
@@ -56,18 +126,18 @@ public class COCommand implements CommandExecutor {
             default:
                 boolean force = args.length > 1 && args[1].equalsIgnoreCase("force");
                 String str = checkoff.playerNameToUUID.get(primaryArg);
-                if(str == null) {
-                    ply.sendMessage(checkoff.makeMessageBuilder().append("No idea who that is...").toString());
+                if (str == null) {
+                    checkoff.sendXML(ply, checkoff.makeMessageBuilder().append("No idea who that is...").toString());
                     return true;
                 }
                 UUID uuid = UUID.fromString(str);
                 Player targetPly = checkoff.getServer().getPlayer(uuid);
-                if(targetPly != null && targetPly.isOnline() && !force) {
-                    ply.sendMessage(checkoff.makeMessageBuilder().append("Player is online. Use with force (/co player force) to enforce removal").toString());
+                if (targetPly != null && targetPly.isOnline() && !force) {
+                    checkoff.sendXML(ply, checkoff.makeMessageBuilder().append("Player is online. Use with force (/co player force) to enforce removal").toString());
                     return true;
                 }
                 checkoff.removeCOPlayer(uuid);
-                ply.sendMessage(checkoff.makeMessageBuilder().append("Player removed from CO").toString());
+                checkoff.sendXML(ply, checkoff.makeMessageBuilder().append("Player removed from CO").toString());
                 break;
         }
 

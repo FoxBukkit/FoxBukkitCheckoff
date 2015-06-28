@@ -19,9 +19,16 @@ package com.foxelbox.foxbukkit.checkoff;
 import com.foxelbox.dependencies.config.Configuration;
 import com.foxelbox.dependencies.redis.RedisManager;
 import com.foxelbox.dependencies.threading.SimpleThreadCreator;
+import com.foxelbox.foxbukkit.chat.FoxBukkitChat;
+import com.foxelbox.foxbukkit.chat.Utils;
+import com.foxelbox.foxbukkit.chat.json.ChatMessageOut;
+import com.foxelbox.foxbukkit.chat.json.MessageTarget;
+import com.foxelbox.foxbukkit.chat.json.UserInfo;
 import com.foxelbox.foxbukkit.permissions.FoxBukkitPermissionHandler;
 import com.foxelbox.foxbukkit.permissions.FoxBukkitPermissions;
 import com.foxelbox.foxbukkit.scoreboard.FoxBukkitScoreboard;
+import de.diddiz.LogBlock.LogBlock;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,9 +48,12 @@ import java.util.Set;
 import java.util.UUID;
 
 public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
-    private FoxBukkitPermissions permissions;
-    private FoxBukkitPermissionHandler permissionHandler;
-    private FoxBukkitScoreboard scoreboardPlugin;
+    FoxBukkitPermissions permissions;
+    FoxBukkitPermissionHandler permissionHandler;
+    FoxBukkitScoreboard scoreboardPlugin;
+    FoxBukkitChat fbChat;
+
+    LogBlock logBlock;
 
     Configuration configuration;
     RedisManager redisManager;
@@ -51,12 +61,23 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
     Map<String,String> playerUUIDToName;
     Map<String,String> playerNameToUUID;
 
-    private Scoreboard scoreboard;
+    Scoreboard scoreboard;
 
     Set<UUID> checkOffPlayers = new LinkedHashSet<>();
 
+    void sendXML(Player source, String content) {
+        ChatMessageOut chatMessageOut = new ChatMessageOut();
+        chatMessageOut.server = null;
+        chatMessageOut.from = new UserInfo(source.getUniqueId(), source.getName());
+        chatMessageOut.context = UUID.randomUUID();
+        chatMessageOut.finalize_context = true;
+        chatMessageOut.contents = content;
+        chatMessageOut.to = new MessageTarget("player", new String[] { source.getUniqueId().toString() });
+        fbChat.redisHandler.onMessage(chatMessageOut);
+    }
+
     StringBuilder makeMessageBuilder() {
-        return new StringBuilder("\u00a75[FBCO] \u00a7f");
+        return new StringBuilder("<color name=\"dark_purple\">[FBCO]</color> ");
     }
 
     /**
@@ -76,8 +97,9 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
      * @return true if the player wasn't already on checkoff
      */
     public boolean addCOPlayer(UUID playerName) {
-        if(checkOffPlayers.contains(playerName))
+        if(checkOffPlayers.contains(playerName)) {
             return false;
+        }
 
         checkOffPlayers.add(playerName);
         saveCO();
@@ -104,8 +126,9 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
      * @return true if the player wasn't already on checkoff
      */
     public boolean removeCOPlayer(UUID playerName) {
-        if (!checkOffPlayers.contains(playerName))
+        if (!checkOffPlayers.contains(playerName)) {
             return false;
+        }
 
         checkOffPlayers.remove(playerName);
         saveCO();
@@ -134,8 +157,9 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
 
         try {
             final File file = new File(getDataFolder(), "coplayers.txt");
-            if (!file.exists())
+            if (!file.exists()) {
                 return;
+            }
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while((line = reader.readLine()) != null) {
@@ -154,14 +178,18 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
 
     // CO online status update
 
+    public boolean isPlayerOnline(UUID uuid) {
+        Player ply = getServer().getPlayer(uuid);
+        return ply != null && ply.isOnline();
+    }
+
     /**
      * Refreshes the player's online status if they're on checkoff.
      *
      * @param playerName the name of the player to refresh
      */
     public void refreshCOPlayerOnlineState(UUID playerName) {
-        Player ply = getServer().getPlayer(playerName);
-        setCOPlayerOnlineState(playerName, ply != null && ply.isOnline());
+        setCOPlayerOnlineState(playerName, isPlayerOnline(playerName));
     }
 
     /**
@@ -171,16 +199,16 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
      * @param online the new online status
      */
     public void setCOPlayerOnlineState(UUID playerName, boolean online) {
-        if(!checkOffPlayers.contains(playerName))
+        if(!checkOffPlayers.contains(playerName)) {
             return;
+        }
 
         scoreboard.resetScores(getOfflinePlayer(playerName, !online));
         final Score score = objective.getScore(getOfflinePlayer(playerName, online));
         if (online) {
             score.setScore(1);
             score.setScore(0);
-        }
-        else {
+        }  else {
             score.setScore(1);
         }
     }
@@ -241,6 +269,9 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
 
         playerUUIDToName = redisManager.createCachedRedisMap("playerUUIDToName");
         playerNameToUUID = redisManager.createCachedRedisMap("playerNameToUUID");
+
+        logBlock = (LogBlock)getServer().getPluginManager().getPlugin("LogBlock");
+        fbChat = (FoxBukkitChat)getServer().getPluginManager().getPlugin("FoxBukkitChat");
 
         permissions = (FoxBukkitPermissions)getServer().getPluginManager().getPlugin("FoxBukkitPermissions");
         permissionHandler = permissions.getHandler();
