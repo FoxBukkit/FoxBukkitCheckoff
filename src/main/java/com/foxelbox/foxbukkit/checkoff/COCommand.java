@@ -16,7 +16,6 @@
  */
 package com.foxelbox.foxbukkit.checkoff;
 
-import de.diddiz.LogBlock.QueryParams;
 import de.diddiz.LogBlock.html.MessageHelper;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
