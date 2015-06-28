@@ -16,7 +16,7 @@
  */
 package com.foxelbox.foxbukkit.checkoff;
 
-import de.diddiz.LogBlock.html.MessageHelper;
+import com.foxelbox.foxbukkit.chat.MessageHelper;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
