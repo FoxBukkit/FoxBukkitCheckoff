@@ -1,7 +1,8 @@
 name: FoxBukkitCheckoff
 main: com.foxelbox.foxbukkit.checkoff.FoxBukkitCheckoff
 version: 1.0.0
-depend: [FoxBukkitChat, FoxBukkitScoreboard, FoxBukkitPermissions, LogBlock]
+depend: [FoxBukkitChat, FoxBukkitScoreboard, FoxBukkitPermissions]
+softdepend: [LogBlock]
 commands:
   co:
     description: Uses Checkoff system

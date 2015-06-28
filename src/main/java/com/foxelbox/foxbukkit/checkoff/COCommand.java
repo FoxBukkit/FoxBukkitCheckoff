@@ -23,22 +23,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
 
 public class COCommand implements CommandExecutor {
     private final FoxBukkitCheckoff checkoff;
-
-    private boolean isChangesListEmptyFor(CommandSender commandSender, String... args) {
-        try {
-            return checkoff.logBlock.getBlockChanges(new QueryParams(checkoff.logBlock, commandSender, Arrays.asList(args))).isEmpty();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     private String getButtonsForPlayer(UUID uuid, String playerName) {
         String buttons = MessageHelper.button("/lb player " + playerName + " sum blocks", "lb", "blue", true) + " "
@@ -88,6 +78,11 @@ public class COCommand implements CommandExecutor {
                 }
                 break;
             case "empty":
+                if(checkoff.logBlock == null) {
+                    checkoff.sendXML(ply, checkoff.makeMessageBuilder().append("No LogBlock!").toString());
+                    return true;
+                }
+
                 final HashSet<UUID> offlinePlayerUUIDs = new HashSet<>();
                 for (UUID playerName : checkoff.checkOffPlayers) {
                     if (!checkoff.isPlayerOnline(playerName)) {
@@ -100,7 +95,7 @@ public class COCommand implements CommandExecutor {
                         while (it.hasNext()) {
                             final UUID uuid = it.next();
                             final String name = checkoff.playerUUIDToName.get(uuid.toString());
-                            if (!isChangesListEmptyFor(ply, "player", name) || !isChangesListEmptyFor(ply, "player", name, "chestaccess")) {
+                            if (!checkoff.logBlock.isChangesListEmptyFor(ply, "player", name) || !checkoff.logBlock.isChangesListEmptyFor(ply, "player", name, "chestaccess")) {
                                 it.remove();
                             }
                         }

@@ -20,21 +20,19 @@ import com.foxelbox.dependencies.config.Configuration;
 import com.foxelbox.dependencies.redis.RedisManager;
 import com.foxelbox.dependencies.threading.SimpleThreadCreator;
 import com.foxelbox.foxbukkit.chat.FoxBukkitChat;
-import com.foxelbox.foxbukkit.chat.Utils;
 import com.foxelbox.foxbukkit.chat.json.ChatMessageOut;
 import com.foxelbox.foxbukkit.chat.json.MessageTarget;
 import com.foxelbox.foxbukkit.chat.json.UserInfo;
 import com.foxelbox.foxbukkit.permissions.FoxBukkitPermissionHandler;
 import com.foxelbox.foxbukkit.permissions.FoxBukkitPermissions;
 import com.foxelbox.foxbukkit.scoreboard.FoxBukkitScoreboard;
-import de.diddiz.LogBlock.LogBlock;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -53,7 +51,7 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
     FoxBukkitScoreboard scoreboardPlugin;
     FoxBukkitChat fbChat;
 
-    LogBlock logBlock;
+    LBAdapterBase logBlock;
 
     Configuration configuration;
     RedisManager redisManager;
@@ -270,7 +268,10 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
         playerUUIDToName = redisManager.createCachedRedisMap("playerUUIDToName");
         playerNameToUUID = redisManager.createCachedRedisMap("playerNameToUUID");
 
-        logBlock = (LogBlock)getServer().getPluginManager().getPlugin("LogBlock");
+        Plugin logBlock = getServer().getPluginManager().getPlugin("LogBlock");
+        if(logBlock != null) {
+            this.logBlock = new LBAdapter(logBlock);
+        }
         fbChat = (FoxBukkitChat)getServer().getPluginManager().getPlugin("FoxBukkitChat");
 
         permissions = (FoxBukkitPermissions)getServer().getPluginManager().getPlugin("FoxBukkitPermissions");
