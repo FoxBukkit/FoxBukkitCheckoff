@@ -33,7 +33,7 @@ public class COCommand implements CommandExecutor {
         String buttons = MessageHelper.button("/lb player " + playerName + " sum blocks", "lb", "blue", true) + " "
                 + MessageHelper.button("/lb player " + playerName + " chestaccess", "chest", "blue", true);
         if (checkoff.isPlayerOnline(uuid)) {
-            buttons = MessageHelper.button("/at 0 vanish on; tp -sn \"" + playerName + '"', "tp", "blue", true) + " " + buttons;
+            buttons = MessageHelper.button("/at 0 /vanish on;/tp -sn \"" + playerName + '"', "tp", "blue", true) + " " + buttons;
         } else {
             buttons = MessageHelper.button("/co " + playerName, "x", "red", true) + " " + buttons;
         }
