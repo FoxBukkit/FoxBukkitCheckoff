@@ -68,7 +68,7 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
         chatMessageOut.server = null;
         chatMessageOut.from = new UserInfo(source.getUniqueId(), source.getName());
         chatMessageOut.context = UUID.randomUUID();
-        chatMessageOut.finalize_context = true;
+        chatMessageOut.finalizeContext = true;
         chatMessageOut.contents = content;
         chatMessageOut.to = new MessageTarget("player", new String[] { source.getUniqueId().toString() });
         fbChat.redisHandler.onMessage(chatMessageOut);
