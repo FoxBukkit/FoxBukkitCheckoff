@@ -20,6 +20,7 @@ import com.foxelbox.dependencies.config.Configuration;
 import com.foxelbox.dependencies.redis.RedisManager;
 import com.foxelbox.dependencies.threading.SimpleThreadCreator;
 import com.foxelbox.foxbukkit.chat.FoxBukkitChat;
+import com.foxelbox.foxbukkit.chat.Messages;
 import com.foxelbox.foxbukkit.chat.json.ChatMessageOut;
 import com.foxelbox.foxbukkit.chat.json.MessageTarget;
 import com.foxelbox.foxbukkit.chat.json.UserInfo;
@@ -70,7 +71,7 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
         chatMessageOut.context = UUID.randomUUID();
         chatMessageOut.finalizeContext = true;
         chatMessageOut.contents = content;
-        chatMessageOut.to = new MessageTarget("player", new String[] { source.getUniqueId().toString() });
+        chatMessageOut.to = new MessageTarget(Messages.TargetType.PLAYER, new String[] { source.getUniqueId().toString() });
         fbChat.chatQueueHandler.onMessage(chatMessageOut);
     }
 
