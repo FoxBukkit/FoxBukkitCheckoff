@@ -222,11 +222,11 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
      */
     public boolean toggleDisplayCO(Player player) {
         if (isDisplayingCO(player)) {
-            player.setScoreboard(getServer().getScoreboardManager().getMainScoreboard());
+            scoreboardPlugin.setPlayerScoreboard(player, null);
             return false;
         }
         else {
-            player.setScoreboard(scoreboard);
+            scoreboardPlugin.setPlayerScoreboard(player, scoreboard);
             return true;
         }
     }
