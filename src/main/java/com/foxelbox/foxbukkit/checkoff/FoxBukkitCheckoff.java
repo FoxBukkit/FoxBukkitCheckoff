@@ -151,6 +151,16 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
         }
     }
 
+    public void reload() {
+        if (objective != null) {
+            objective.unregister();
+        }
+        loadCO();
+        objective = scoreboard.registerNewObjective("checkoff", DUMMY_CRITERION);
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        objective.setDisplayName("Checkov");
+    }
+
     private void loadCO() {
         checkOffPlayers.clear();
 
@@ -173,7 +183,7 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
     }
 
     public static final String DUMMY_CRITERION = "dummy";
-    private Objective objective;
+    private Objective objective = null;
 
     // CO online status update
 
@@ -281,9 +291,7 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
         scoreboardPlugin = (FoxBukkitScoreboard)getServer().getPluginManager().getPlugin("FoxBukkitScoreboard");
         scoreboard = scoreboardPlugin.createScoreboard();
 
-        objective = scoreboard.registerNewObjective("checkoff", DUMMY_CRITERION);
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName("Checkov");
+        reload();
 
         permissionHandler.addRankChangeHandler(new FoxBukkitPermissionHandler.OnRankChange() {
             @Override

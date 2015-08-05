@@ -76,6 +76,9 @@ public class COCommand implements CommandExecutor {
                     );
                 }
                 break;
+            case "reload":
+                checkoff.reload();
+                break;
             case "empty":
                 if(checkoff.logBlock == null) {
                     checkoff.sendXML(ply, checkoff.makeMessageBuilder().append("No LogBlock!").toString());
