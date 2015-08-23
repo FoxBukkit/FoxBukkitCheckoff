@@ -155,10 +155,10 @@ public class FoxBukkitCheckoff extends JavaPlugin implements Listener {
         if (objective != null) {
             objective.unregister();
         }
-        loadCO();
         objective = scoreboard.registerNewObjective("checkoff", DUMMY_CRITERION);
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName("Checkov");
+        loadCO();
     }
 
     private void loadCO() {
