@@ -37,10 +37,10 @@ public class COCommand implements CommandExecutor {
         } else {
             buttons = MessageHelper.button("/co " + playerName, "x", "red", true) + " " + buttons;
         }
-        buttons += MessageHelper.button("/settag \"" + playerName + "\" $4*", "TDRed", "blue", true)
-                + MessageHelper.button("/settag \"" + playerName + "\" $4c*", "TLRed", "blue", true)
-                + MessageHelper.button("/settag \"" + playerName + "\" $42*", "TGreen", "blue", true)
-                + MessageHelper.button("/settag \"" + playerName + "\" none", "TNone", "blue", true);
+        buttons += " " + MessageHelper.button("/settag \"" + playerName + "\" $4*", "TDRed", "blue", true)
+                + " " + MessageHelper.button("/settag \"" + playerName + "\" $4c*", "TLRed", "blue", true)
+                + " " + MessageHelper.button("/settag \"" + playerName + "\" $42*", "TGreen", "blue", true)
+                + " " + MessageHelper.button("/settag \"" + playerName + "\" none", "TNone", "blue", true);
         return buttons;
     }
 
