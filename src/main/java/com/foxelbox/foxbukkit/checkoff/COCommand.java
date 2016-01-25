@@ -31,15 +31,15 @@ public class COCommand implements CommandExecutor {
 
     private String getButtonsForPlayer(UUID uuid, String playerName) {
         String buttons = MessageHelper.button("/lb player " + playerName + " sum blocks", "lb", "blue", true) + " "
-                + MessageHelper.button("/lb player " + playerName + " chestaccess", "chest", "blue", true);
+                + MessageHelper.button("/lb player " + playerName + " chestaccess coords", "chest", "blue", true);
         if (checkoff.isPlayerOnline(uuid)) {
             buttons = MessageHelper.button("/at 0 /vanish on;/tp -sn \"" + playerName + '"', "tp", "blue", true) + " " + buttons;
         } else {
             buttons = MessageHelper.button("/co " + playerName, "x", "red", true) + " " + buttons;
         }
-        buttons += " " + MessageHelper.button("/settag \"" + playerName + "\" $4*", "TDRed", "blue", true)
-                + " " + MessageHelper.button("/settag \"" + playerName + "\" $4c*", "TLRed", "blue", true)
-                + " " + MessageHelper.button("/settag \"" + playerName + "\" $42*", "TGreen", "blue", true)
+        buttons += " " + MessageHelper.button("/settag \"" + playerName + "\" $4* ", "TDRed", "blue", true)
+                + " " + MessageHelper.button("/settag \"" + playerName + "\" $c* ", "TLRed", "blue", true)
+                + " " + MessageHelper.button("/settag \"" + playerName + "\" $a* ", "TGreen", "blue", true)
                 + " " + MessageHelper.button("/settag \"" + playerName + "\" none", "TNone", "blue", true);
         return buttons;
     }
