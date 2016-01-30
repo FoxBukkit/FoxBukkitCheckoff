@@ -101,7 +101,7 @@ public class COCommand implements CommandExecutor {
                         while (it.hasNext()) {
                             final UUID uuid = it.next();
                             final String name = checkoff.playerUUIDToName.get(uuid.toString());
-                            if (!checkoff.logBlock.isChangesListEmptyFor(ply, "player", name, "world", "world") || !checkoff.logBlock.isChangesListEmptyFor(ply, "player", name, "world", "world", "chestaccess")) {
+                            if (!checkoff.logBlock.isChangesListEmptyFor(ply, "player", name, "world", "\"world\"") || !checkoff.logBlock.isChangesListEmptyFor(ply, "player", name, "world", "\"world\"", "chestaccess")) {
                                 it.remove();
                             }
                         }
