@@ -121,7 +121,7 @@
     <repositories>
         <repository>
             <id>foxelbox-repo</id>
-            <url>http://repo.foxelbox.com</url>
+            <url>https://maven.doridian.net/repository/maven-snapshots</url>
         </repository>
     </repositories>
 </project>
