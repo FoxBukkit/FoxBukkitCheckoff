@@ -116,6 +116,12 @@
 			<artifactId>logblock</artifactId>
 			<version>1.10.0-dev-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+			        <exclusion>
+			            <groupId>*</groupId>
+			            <artifactId>*</artifactId>
+			        </exclusion>
+			    </exclusions>
 		</dependency>
 	</dependencies>
     <repositories>
