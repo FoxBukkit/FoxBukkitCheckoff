@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>de.diddiz</groupId>
 			<artifactId>logblock</artifactId>
-			<version>dev-SNAPSHOT</version>
+			<version>1.10.0-dev-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
